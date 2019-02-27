@@ -1,4 +1,4 @@
-presmooth_data <- function(obs_data, n = NULL, n_trt = NULL, n_ctrl = NULL) {
+presmooth_data <- function(obs_data, n = NULL, n_trt = NULL, n_ctrl = NULL, ...) {
   # browser()
   if (is.null(n_trt) | is.null(n_ctrl)) {
     n_trt <- n_ctrl <- n
@@ -9,8 +9,8 @@ presmooth_data <- function(obs_data, n = NULL, n_trt = NULL, n_ctrl = NULL) {
   control_arm <- obs_data %>%
     filter(a == 0) %>%
     arrange(id, tt)
-  trt_fpc_fit <- fpca(ds = treatment_arm, ycol = 'x', tcol = 'tt', idcol = 'id')
-  ctrl_fpc_fit <- fpca(ds = control_arm, ycol = 'x', tcol = 'tt', idcol = 'id')
+  trt_fpc_fit <- fpca(ds = treatment_arm, ycol = 'x', tcol = 'tt', idcol = 'id', ...)
+  ctrl_fpc_fit <- fpca(ds = control_arm, ycol = 'x', tcol = 'tt', idcol = 'id', ...)
 
   trt_xhat <- trt_fpc_fit$yh_ds %>%
     gather(tp, X, -id) %>%
