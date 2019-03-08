@@ -292,12 +292,12 @@ fit_obs_models <- function(y_t, y_c, obs_data,
   trt_obs_x <- wide_obs %>%
     filter(a == 1) %>%
     arrange(id) %>%
-    dplyr::select(t1:t4) %>%
+    dplyr::select(starts_with('t')) %>%
     as.matrix
   ctrl_obs_x <- wide_obs %>%
     filter(a == 0) %>%
     arrange(id) %>%
-    dplyr::select(t1:t4) %>%
+    dplyr::select(starts_with('t')) %>%
     as.matrix
 
   #------------------------------------------
