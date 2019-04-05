@@ -44,7 +44,8 @@ generate_nonlinear_data <- function(n, n_i, k, s_y, s_x, delta, nt = 101) {
   
   obs_ds <- ds %>%
     group_by(id) %>%
-    sample_n(n_i)
+    sample_n(n_i) %>% 
+    ungroup
   
   list(full_ds = ds,
        obs_ds = obs_ds)
