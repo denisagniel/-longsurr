@@ -1,27 +1,31 @@
-presmooth_data <- function(obs_data, n = NULL, n_trt = NULL, n_ctrl = NULL, ...) {
+presmooth_data <- function(obs_data, ...) {
   # browser()
-  if (is.null(n_trt) | is.null(n_ctrl)) {
-    n_trt <- n_ctrl <- n
-  }
   treatment_arm <- obs_data %>%
     filter(a == 1) %>%
     arrange(id, tt)
   control_arm <- obs_data %>%
     filter(a == 0) %>%
     arrange(id, tt)
+  n_trt <- treatment_arm %>%
+    count(id) %>%
+    nrow
+  n_ctrl <- control_arm %>%
+    count(id) %>%
+    nrow
+  
   trt_fpc_fit <- fpca(ds = treatment_arm, ycol = 'x', tcol = 'tt', idcol = 'id', ...)
   ctrl_fpc_fit <- fpca(ds = control_arm, ycol = 'x', tcol = 'tt', idcol = 'id', ...)
-
+# browser()
   trt_xhat <- trt_fpc_fit$yh_ds %>%
     gather(tp, X, -id) %>%
     mutate(id = as.integer(id),
-           tt = rep(seq(0, 1, length = 51), each = n_trt),
+           tt = rep(seq(-1, 1, length = 51), each = n_trt),
            type = 'estimated')
 
   ctrl_xhat <- ctrl_fpc_fit$yh_ds %>%
     gather(tp, X, -id) %>%
     mutate(id = as.integer(id),
-           tt = rep(seq(0, 1, length = 51), each = n_ctrl),
+           tt = rep(seq(-1, 1, length = 51), each = n_ctrl),
            type = 'estimated')
   # browser()
   trt_xhat_wide <- trt_xhat %>%
