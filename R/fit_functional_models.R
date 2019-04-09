@@ -144,36 +144,33 @@ fit_naive_change_model <- function(y_t, y_c, X_t, X_c) {
 #
 # }
 
-fit_fgam <- function(y_t, y_c, X_t, X_c) {
-  fit_t <- fgam(y_t ~ af(X_t))
-  fit_c <- fgam(y_c ~ af(X_c))
+fit_fgam <- function(y_t, y_c, X_t, X_c, ...) {
+  fit_t <- fgam(y_t ~ af(X_t), ...)
+  fit_c <- fgam(y_c ~ af(X_c), ...)
   n_t <- length(y_t)
   n_c <- length(y_c)
 
-  Xbar_t <- colMeans(X_t) %>% matrix(1, ncol(X_t))
-  predict_yhat_tc <- predict(fit_c, newdata = list(X_c = Xbar_t), type = 'response', se.fit = TRUE)
+  # Xbar_t <- colMeans(X_t) %>% matrix(1, ncol(X_t))
+  predict_yhat_tc <- predict(fit_c, newdata = list(X_c = X_t), type = 'response')
 
-  Xbar_c <- colMeans(X_c) %>% matrix(1, ncol(X_c))
-  predict_yhat_ct <- predict(fit_t, newdata = list(X_t = Xbar_c), type = 'response', se.fit = TRUE)
+  # Xbar_c <- colMeans(X_c) %>% matrix(1, ncol(X_c))
+  predict_yhat_ct <- predict(fit_t, newdata = list(X_t = X_c), type = 'response')
 #
 #   data.frame(type = c('mu_t', 'mu_c', 'mu_st', 'mu_sc'),
 #              est = c(mean(y_t), mean(y_c), predict_yhat_ct$fit, predict_yhat_tc$fit),
 #              se = c(sd(y_t)/sqrt(n_t), sd(y_c)/sqrt(n_c), predict_yhat_ct$se.fit, predict_yhat_tc$se.fit))
   delta_sum_fn(yt = y_t,
                yc = y_c,
-               muhat_ct = predict_yhat_ct$fit,
-               muhat_tc = predict_yhat_tc$fit,
-               se_hat_ct = predict_yhat_ct$se.fit,
-               se_hat_tc = predict_yhat_tc$se.fit)
+               muhat_ct = mean(predict_yhat_ct),
+               muhat_tc = mean(predict_yhat_tc))
 
-  data.frame(type = c('mu_t', 'mu_c', 'mu_st',
-                      'mu_sc', 'delta', 'delta_s', 'R'),
-             est = c(mean(y_t), mean(y_c), predict_yhat_ct$fit,
-                     predict_yhat_tc$fit, mean(y_t) - mean(y_c),
-                     mean(y_t) - predict_yhat_ct$fit,
-                     1 - (mean(y_t) - predict_yhat_ct$fit)/
-                       (mean(y_t) - mean(y_c))),
-             se = c(sd(y_t)/sqrt(n_t), sd(y_c)/sqrt(n_c), predict_yhat_ct$se.fit, predict_yhat_tc$se.fit, sqrt(var(y_t)/n_t + var(y_c)/n_c), NA, NA))
+  # data.frame(type = c('mu_t', 'mu_c', 'mu_st',
+  #                     'mu_sc', 'delta', 'delta_s', 'R'),
+  #            est = c(mean(y_t), mean(y_c), predict_yhat_ct$fit,
+  #                    predict_yhat_tc$fit, mean(y_t) - mean(y_c),
+  #                    mean(y_t) - predict_yhat_ct$fit,
+  #                    1 - (mean(y_t) - predict_yhat_ct$fit)/
+  #                      (mean(y_t) - mean(y_c))))
 
   # predict_t_on_c <- predict(fit_c, newdata = list(X_c = X_t), type = 'response')
   # predict_c_on_t <- predict(fit_t, newdata = list(X_t = X_c), type = 'response')
@@ -206,38 +203,36 @@ fit_pco_model <- function(y_t, y_c, X_t, X_c) {
 
 }
 
-fit_kernel_model <- function(y_t, y_c, X_t, X_c) {
-  # browser()
+fit_kernel_model <- function(y_t, y_c, X_t, X_c, Ker=AKer.epa, ...) {
+  browser()
   fd_Xt <- fdata(X_t)
   fd_Xc <- fdata(X_c)
-  fit_t <- fregre.np(fd_Xt, y_t, Ker=AKer.epa)
-  fit_c <- fregre.np(fd_Xc, y_c, Ker=AKer.epa)
+  fit_t <- fregre.np.cv(fd_Xt, y_t, ...)
+  
+  
   n_t <- length(y_t)
   n_c <- length(y_c)
 
-  Xbar_t <- colMeans(X_t) %>% matrix(1, ncol(X_t))
-  fd_Xbar_t <- fdata(Xbar_t)
-  yhat_t_on_c <- predict.fregre.fd(fit_c, new.fdataobj = fd_Xbar_t, se.fit = TRUE)
-  # old_yhat_t_on_c <- predict.fregre.fd(fit_c, new.fdataobj = fd_Xt, se.fit = TRUE)
+  # Xbar_t <- colMeans(X_t) %>% matrix(1, ncol(X_t))
+  # fd_Xbar_t <- fdata(Xbar_t)
+  # yhat_t_on_c <- predict.fregre.fd(fit_c, new.fdataobj = fd_Xbar_t, se.fit = TRUE)
+  # yhat_t_on_c <- predict.fregre.fd(fit_c, new.fdataobj = fd_Xt, se.fit = TRUE)
 
-  Xbar_c <- colMeans(X_c) %>% matrix(1, ncol(X_c))
-  fd_Xbar_c <- fdata(Xbar_c)
-  yhat_c_on_t <- predict.fregre.fd(fit_t, new.fdataobj = fd_Xbar_c, se.fit = TRUE)
-  # old_yhat_c_on_t <- predict.fregre.fd(fit_t, new.fdataobj = fd_Xc, se.fit = TRUE)
+  # Xbar_c <- colMeans(X_c) %>% matrix(1, ncol(X_c))
+  # fd_Xbar_c <- fdata(Xbar_c)
+  # yhat_c_on_t <- predict.fregre.fd(fit_t, new.fdataobj = fd_Xbar_c, se.fit = TRUE)
+  yhat_c_on_t <- predict(fit_t, new.fdataobj = fd_Xc)
 
   # yhat_t_on_c <- predict.fregre.fd(fit_c, new.fdataobj = fd_Xt)
   # yhat_c_on_t <- predict.fregre.fd(fit_t, new.fdataobj = fd_Xc)
   # data.frame(type = c('mu_t', 'mu_c', 'mu_st', 'mu_sc'),
   #            est = c(mean(y_t), mean(y_c), yhat_c_on_t$fit, yhat_t_on_c$fit),
   #            se = c(sd(y_t)/sqrt(n_t), sd(y_c)/sqrt(n_c), yhat_c_on_t$se.fit, yhat_t_on_c$se.fit))
-  data.frame(type = c('mu_t', 'mu_c', 'mu_st',
-                      'mu_sc', 'delta', 'delta_s', 'R'),
-             est = c(mean(y_t), mean(y_c), yhat_c_on_t$fit,
-                     yhat_t_on_c$fit, mean(y_t) - mean(y_c),
-                     mean(y_t) - yhat_c_on_t$fit,
-                     1 - (mean(y_t) - yhat_c_on_t$fit)/
-                       (mean(y_t) - mean(y_c))),
-             se = c(sd(y_t)/sqrt(n_t), sd(y_c)/sqrt(n_c), yhat_c_on_t$se.fit, yhat_t_on_c$se.fit, sqrt(var(y_t)/n_t + var(y_c)/n_c), NA, NA))
+  delta_sum_fn(yt = y_t,
+               yc = y_c,
+               muhat_ct = mean(yhat_c_on_t$fit)
+               # muhat_tc = mean(yhat_t_on_c$fit)
+               )
 }
 
 fit_oracle_models <- function(y_t, y_c, X_t, X_c) {
