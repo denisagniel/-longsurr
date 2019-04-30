@@ -66,7 +66,7 @@ fit_fn <- function(full_data, obs_data) {
   full_res
 }
 
-lsa_sim <- function(n, n_i, m, s_y, s_x, delta, B, run) {
+lsa_sim <- function(n, n_i, m, s_y, s_x, delta, B, run, tmpdir) {
   library(dplyr)
   library(here)
   library(purrr) 
@@ -140,7 +140,7 @@ lsa_sim <- function(n, n_i, m, s_y, s_x, delta, B, run) {
       full_join(boot_vars)
   } else full_res <- res
   saveRDS(full_res, here(
-    glue('results/tmp/nl_res_n{n}_ni{n_i}_k{k}_sy{s_y}_sx{s_x}_delta{delta}_B{B}_{run}.rds'))
+    glue('{tmpdir}/res_n{n}_ni{n_i}_m-{m}_sy{s_y}_sx{s_x}_delta{delta}_B{B}_{run}.rds'))
   )
   full_res
 }
