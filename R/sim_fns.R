@@ -139,8 +139,8 @@ lsa_sim <- function(n, n_i, m, s_y, s_x, delta, B, run, tmpdir) {
     full_res <- res %>%
       full_join(boot_vars)
   } else full_res <- res
-  saveRDS(full_res, here(
-    glue('{tmpdir}/res_n{n}_ni{n_i}_m-{m}_sy{s_y}_sx{s_x}_delta{delta}_B{B}_{run}.rds'))
+  saveRDS(full_res,
+    glue('{tmpdir}/res_n{n}_ni{n_i}_m-{m}_sy{s_y}_sx{s_x}_delta{delta}_B{B}_{run}.rds')
   )
   full_res
 }
