@@ -81,7 +81,7 @@ lsa_sim <- function(n, n_i, m, s_y, s_x, delta, B, run, tmpdir) {
   library(fda.usc)
   select <- dplyr::select
   # browser()
-  print(glue('This is sim {run} for sample size {n}, number of observations {n_i}, k {k}, sigma_y {s_y}, sigma_x {s_x}, and delta {delta}, using {B} bootstrap samples.'))
+  print(glue('This is sim {run} for sample size {n}, number of observations {n_i}, model is {m}, sigma_y {s_y}, sigma_x {s_x}, and delta {delta}, using {B} bootstrap samples.'))
   
   if (m == 'linear') {
     c(full_data, obs_data) %<-%
