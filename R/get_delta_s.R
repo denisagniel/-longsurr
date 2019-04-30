@@ -34,9 +34,9 @@ get_delta_s <- function(y_t = NULL, y_c = NULL, X_t = NULL, X_c = NULL) {
   delta_ss <-
     tibble(delta_s_k = mean(k_yhat) - mean(y_c),
               delta_s_fgam = mean(fgam_yhat) - mean(y_c),
-           delta_s_kfgam = k_lin_fit$delta.s,
+           delta_s_kfgam = k_fgam_fit$delta.s,
               delta_s_lin = mean(lin_yhat) - mean(y_c),
-           delta_s_klin = k_fgam_fit$delta.s,
+           delta_s_klin = k_lin_fit$delta.s,
               delta_s_mean = mean_fit$delta.s,
               delta_s_change = change_fit$delta.s)
   delta_ss
