@@ -1,4 +1,4 @@
-generate_nonlinear_data <- function(n, n_i, s_y, s_x, delta_s, nt = 101) {
+generate_nonlinear_data <- function(n, n_i, s_y, s_x, delta, nt = 101) {
   t <- seq(0, 10, length = nt)
   
   ds_1 <- tibble(
