@@ -1,7 +1,7 @@
 fit_fn <- function(full_data, obs_data) {
   # browser()
   wide_ds <- full_data %>%
-    dplyr::select(-mu_t, -r_x, -X) %>%
+    dplyr::select(id, a, tt, x, y) %>%
     spread(tt, x) 
   wide_ds_0 <- wide_ds %>%
     filter(a == 0)
