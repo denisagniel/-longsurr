@@ -8,12 +8,12 @@ fit_fn <- function(full_data, obs_data) {
   wide_ds_1 <- wide_ds %>%
     filter(a == 1)
   X_t <- wide_ds_1 %>%
-    dplyr::select(`-1`:`1`) %>%
+    dplyr::select(`0`:`10`) %>%
     as.matrix
   y_t <- wide_ds_1 %>%
     pull(y)
   X_c <- wide_ds_0 %>%
-    dplyr::select(`-1`:`1`) %>%
+    dplyr::select(`0`:`10`) %>%
     as.matrix
   y_c <- wide_ds_0 %>%
     pull(y)
@@ -66,7 +66,7 @@ fit_fn <- function(full_data, obs_data) {
   full_res
 }
 
-lsa_sim <- function(n, n_i, k, s_y, s_x, delta, B, run) {
+lsa_sim <- function(n, n_i, m, s_y, s_x, delta, B, run) {
   library(dplyr)
   library(here)
   library(purrr) 
@@ -83,9 +83,16 @@ lsa_sim <- function(n, n_i, k, s_y, s_x, delta, B, run) {
   # browser()
   print(glue('This is sim {run} for sample size {n}, number of observations {n_i}, k {k}, sigma_y {s_y}, sigma_x {s_x}, and delta {delta}, using {B} bootstrap samples.'))
   
-  c(full_data, obs_data) %<-%
-    generate_nonlinear_data(n = n, n_i = n_i, k = k, s_y = s_y, 
-                            s_x = s_x, delta = delta)
+  if (m == 'linear') {
+    c(full_data, obs_data) %<-%
+      generate_linear_data(n = n, n_i = n_i, s_y = s_y, 
+                           s_x = s_x, delta = delta)
+  } else if (m == 'nonlinear') {
+    c(full_data, obs_data) %<-%
+      generate_nonlinear_data(n = n, n_i = n_i, s_y = s_y, 
+                           s_x = s_x, delta = delta)
+  }
+  
   
   select <- dplyr::select
   res <- fit_fn(full_data, obs_data)

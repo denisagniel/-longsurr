@@ -1,20 +1,26 @@
-generate_nonlinear_data <- function(n, n_i, k, s_y, s_x, delta, nt = 101) {
-  t <- seq(-1, 1, length = nt)
+generate_nonlinear_data <- function(n, n_i, s_y, s_x, delta_s, nt = 101) {
+  t <- seq(0, 10, length = nt)
   
   ds_1 <- tibble(
     id = rep(1:n, each = nt),
     a = 1,
-    alpha = rep(runif(n, min = -k, max = k), each = nt),
-    beta = rep(runif(n, min = -k, max = k), each = nt),
-    gamma = rep(runif(n, min = -2*k, max = 2*k), each = nt),
-    omega = rep(runif(n)*2*pi, each = nt),
+    u1 = rep(rnorm(n, sd = 5), each = nt),
+    u2 = rep(rnorm(n, mean = 1, sd = 1), each = nt),
+    v11 = rep(rnorm(n, sd = 2), each = nt),
+    v21 = rep(rnorm(n, sd = 2), each = nt),
+    v12 = rep(rnorm(n, sd = 1), each = nt),
+    v22 = rep(rnorm(n, sd = 1), each = nt),
+    v13 = rep(rnorm(n, sd = 0.5), each = nt),
+    v23 = rep(rnorm(n, sd = 0.5), each = nt),
     epsilon = rep(rnorm(n, sd = s_y), each =nt),
     tt = rep(t, n)
   ) %>%
-    mutate(X = gamma*sin(omega*t) + (alpha + 2*pi)*t + beta,
+    mutate(X = u1 + u2*t^2*50/333 + 
+             v11*sin(pi/5*t) + v21*cos(pi/5*t) +
+             v12*sin(2*pi/5*t) + v22*cos(2*pi/5*t) +
+             v13*sin(3*pi/5*t) + v23*cos(3*pi/5*t),
            x = X + rnorm(n*nt, sd = s_x)) %>%
-    mutate(mu_t = 2*pi*tt) %>%
-    mutate(r_x = 10*(X > mu_t + 1)*(1-cos(pi*tt))) %>%
+    mutate(r_x = X^2/50*(t/3)^2) %>%
     group_by(id) %>%
     mutate(r = mean(r_x)) %>%
     ungroup %>%
@@ -23,17 +29,23 @@ generate_nonlinear_data <- function(n, n_i, k, s_y, s_x, delta, nt = 101) {
   ds_0 <- tibble(
     id = rep(n + 1:n, each = nt),
     a = 0,
-    alpha = rep(runif(n, min = -k/4, max = 3*k/4), each = nt),
-    beta = rep(runif(n, min = -k, max = k), each = nt),
-    gamma = rep(runif(n, min = -2*k/4, max = 2*3*k/4), each = nt),
-    omega = rep(runif(n)*2*pi, each = nt),
+    u1 = rep(rnorm(n, sd = 2), each = nt),
+    u2 = rep(rnorm(n, mean = 1, sd = 1), each = nt),
+    v11 = rep(rnorm(n, sd = 1), each = nt),
+    v21 = rep(rnorm(n, sd = 1), each = nt),
+    v12 = rep(rnorm(n, sd = 0.5), each = nt),
+    v22 = rep(rnorm(n, sd = 0.5), each = nt),
+    v13 = rep(rnorm(n, sd = 1/4), each = nt),
+    v23 = rep(rnorm(n, sd = 1/4), each = nt),
     epsilon = rep(rnorm(n, sd = s_y), each =nt),
     tt = rep(t, n)
   ) %>%
-    mutate(X = gamma*sin(omega*t) + (alpha + 2*pi)*t + beta,
+    mutate(X = u1 + u2*t + 
+             v11*sin(pi/5*t) + v21*cos(pi/5*t) +
+             v12*sin(2*pi/5*t) + v22*cos(2*pi/5*t) +
+             v13*sin(3*pi/5*t) + v23*cos(3*pi/5*t),
            x = X + rnorm(n*nt, sd = s_x)) %>%
-    mutate(mu_t = 2*pi*tt) %>%
-    mutate(r_x = 10*abs(X > mu_t + 1)*(1-cos(pi*tt))) %>%
+    mutate(r_x = X^2/50*(t/3)^2) %>%
     group_by(id) %>%
     mutate(r = mean(r_x)) %>%
     ungroup %>%
