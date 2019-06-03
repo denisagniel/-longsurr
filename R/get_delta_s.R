@@ -1,6 +1,11 @@
+make_semimetric_pca <- function(k) {
+  function(x, y) semimetric.pca(x, y, q = k)
+}
+
 get_delta_s <- function(y_t = NULL, y_c = NULL, X_t = NULL, X_c = NULL) {
   fdX_t <- fdata(X_t)
   fdX_c <- fdata(X_c)
+
   
   k_fit <- fregre.np.cv(fdataobj = fdX_t, y = y_t)
   fgam_fit <- fgam(y_t ~ af(X_t))
@@ -30,14 +35,38 @@ get_delta_s <- function(y_t = NULL, y_c = NULL, X_t = NULL, X_c = NULL) {
                              yone = y_t,
                              yzero = y_c, var = FALSE)
   
+  pca1_fit <- fregre.np.cv(fdataobj = fdX_t, y = y_t, 
+                           metric = make_semimetric_pca(1))
+  pca2_fit <- fregre.np.cv(fdataobj = fdX_t, y = y_t, 
+                           metric = make_semimetric_pca(2))
+  pca3_fit <- fregre.np.cv(fdataobj = fdX_t, y = y_t, 
+                           metric = make_semimetric_pca(3))
+  sspline_fit <- fgam(y_t ~ af(X_t, basistype = 's'))
+  
+  
+  pca1_yhat = predict(pca1_fit, fdX_c)
+  pca2_yhat = predict(pca2_fit, fdX_c)
+  pca3_yhat = predict(pca3_fit, fdX_c)
+  sspline_yhat = predict(sspline_fit, newdata = list(X_t = X_c), type = 'response')
+  
+  k_sspline_fit <- R.s.estimate(sone = predict(sspline_fit, type ='response'),
+                                szero = fgam_yhat,
+                                yone = y_t,
+                                yzero = y_c, var = FALSE)
+  
   
   delta_ss <-
-    tibble(delta_s_k = mean(k_yhat) - mean(y_c),
-              delta_s_fgam = mean(fgam_yhat) - mean(y_c),
-           delta_s_kfgam = k_fgam_fit$delta.s,
-              delta_s_lin = mean(lin_yhat) - mean(y_c),
-           delta_s_klin = k_lin_fit$delta.s,
-              delta_s_mean = mean_fit$delta.s,
-              delta_s_change = change_fit$delta.s)
+    tibble(k = mean(k_yhat) - mean(y_c),
+           pca1 = mean(pca1_yhat) - mean(y_c),
+           pca2 = mean(pca2_yhat) - mean(y_c),
+           pca3 = mean(pca3_yhat) - mean(y_c),
+              fgam = mean(fgam_yhat) - mean(y_c),
+           kfgam = k_fgam_fit$delta.s,
+           sspline = mean(sspline_yhat) - mean(y_c),
+           ksspline = k_sspline_fit$delta.s,
+              lin = mean(lin_yhat) - mean(y_c),
+           klin = k_lin_fit$delta.s,
+              mean = mean_fit$delta.s,
+              change = change_fit$delta.s)
   delta_ss
 }
