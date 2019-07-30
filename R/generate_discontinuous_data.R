@@ -1,4 +1,4 @@
-generate_discontinuous_data <- function(n, n_i, k, s_y, s_x, delta_s, nt = 101) {
+generate_discontinuous_data <- function(n, n_i, k, s_y = 1, s_x = 1, delta_s, nt = 101) {
   t <- seq(-1, 1, length = nt)
   
   ds_1 <- tibble(
@@ -18,7 +18,7 @@ generate_discontinuous_data <- function(n, n_i, k, s_y, s_x, delta_s, nt = 101) 
     group_by(id) %>%
     mutate(r = mean(r_x)) %>%
     ungroup %>%
-    mutate(y = delta + r + epsilon)
+    mutate(y = delta_s + r + epsilon)
   
   ds_0 <- tibble(
     id = rep(n + 1:n, each = nt),

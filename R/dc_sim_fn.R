@@ -67,7 +67,7 @@ dc_fit_fn <- function(full_data, obs_data) {
 }
 
 
-dc_sim <- function(n, n_i, k, delta, B, run, tmpdir) {
+dc_sim <- function(n, n_i, s_y = 0.5, s_x = 0.5, k, delta, B, run, tmpdir) {
   library(dplyr)
   library(here)
   library(purrr) 
@@ -85,7 +85,7 @@ dc_sim <- function(n, n_i, k, delta, B, run, tmpdir) {
   print(glue('This is sim {run} for sample size {n}, number of observations {n_i},  k {k}, and delta {delta}, using {B} bootstrap samples.'))
   
   c(full_data, obs_data) %<-%
-    generate_discontinous_data(n = n, n_i = n_i, delta_s = delta, k = k)
+    generate_discontinuous_data(n = n, n_i = n_i, delta_s = delta, k = k, s_y = s_y, s_x = s_x)
   
   
   select <- dplyr::select
@@ -137,7 +137,6 @@ dc_sim <- function(n, n_i, k, delta, B, run, tmpdir) {
     full_res %>%
     mutate(n = n,
            n_i = n_i,
-           m = m,
            delta = delta,
            B = B,
            run = run)
