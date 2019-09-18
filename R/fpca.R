@@ -1,4 +1,4 @@
-fpca <- function(ds, ycol, tcol, idcol, options = list(plot = TRUE, methodBwCov = 'GCV')) {
+fpca <- function(ds, ycol, tcol, idcol, options = list(plot = FALSE, methodBwCov = 'GCV')) {
   # browser()
   list_data <- dataframe_to_list(ds, ycol, tcol, idcol)
   fpca_result <- with(list_data, fdapace::FPCA(y_list, t_list, options))
@@ -18,7 +18,9 @@ fpca <- function(ds, ycol, tcol, idcol, options = list(plot = TRUE, methodBwCov 
   muhat <- approx_mu(fpca_result$mu, fpca_result$workGrid, ds %>% select_(tcol) %>% unlist)
   phi_ds <- data.frame(id = ds %>% select_(idcol), tt = ds %>% select_(tcol), mu = muhat, phi = phi_hat)
 
-  Lambda <- diag(fpca_result$lambda)
+  Lambda <- ifelse(length(fpca_result$lambda) == 1,
+                    fpca_result$lambda,
+                    diag(fpca_result$lambda))
   ids <- unique(ds$id)
   nn <- length(ids)
   Sigma <- fpca_result$smoothedCov
