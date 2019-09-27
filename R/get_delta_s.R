@@ -1,6 +1,4 @@
-make_semimetric_pca <- function(k) {
-  function(x, y) semimetric.pca(x, y, q = k)
-}
+
 
 get_delta_s <- function(y_t = NULL, y_c = NULL, X_t = NULL, X_c = NULL) {
   fdX_t <- fdata(X_t)
