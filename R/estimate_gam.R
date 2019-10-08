@@ -31,7 +31,7 @@
 estimate_gam <- function(y_t, y_c, X_t, X_c) {
   stopifnot(length(y_t) == nrow(X_t))
   stopifnot(length(y_c) == nrow(X_c))
-  stopifnot(all(dim(X_t) == dim(X_c)))
+  stopifnot(ncol(X_t) == ncol(X_c))
   
   fgam_fit <- fgam(y_t ~ af(X_t))
   fgam_yhat = predict(fgam_fit, newdata = list(X_t = X_c), type = 'response')  

@@ -35,7 +35,7 @@
 estimate_kernel <- function(y_t, y_c, X_t, X_c, k = 3) {
   stopifnot(length(y_t) == nrow(X_t))
   stopifnot(length(y_c) == nrow(X_c))
-  stopifnot(all(dim(X_t) == dim(X_c)))
+  stopifnot(ncol(X_t) == ncol(X_c))
   
   fdX_t <- fdata(X_t)
   fdX_c <- fdata(X_c)

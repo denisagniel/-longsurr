@@ -33,7 +33,7 @@
 estimate_linear <- function(y_t, y_c, X_t, X_c) {
   stopifnot(length(y_t) == nrow(X_t))
   stopifnot(length(y_c) == nrow(X_c))
-  stopifnot(all(dim(X_t) == dim(X_c)))
+  stopifnot(ncol(X_t) == ncol(X_c))
   
   lin_fit <- pfr(y_t ~ lf(X_t))
   lin_yhat = predict(lin_fit, newdata = list(X_t = X_c), type = 'response')
