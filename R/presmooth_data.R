@@ -60,12 +60,12 @@ ctrl_yh <- ctrl_fpc_fit$yh_ds %>%
   trt_xhat <- trt_yh %>%
     mutate(id = as.integer(id),
            # tt = rep(seq(-1, 1, length = 51), each = n_trt),
-           tt = as.numeric(str_remove(tp, 'yhat\\.')),
+           tt = as.numeric(stringr::str_remove(tp, 'yhat\\.')),
            type = 'estimated')
 
   ctrl_xhat <- ctrl_yh %>%
     mutate(id = as.integer(id),
-           tt = as.numeric(str_remove(tp, 'yhat\\.')),
+           tt = as.numeric(stringr::str_remove(tp, 'yhat\\.')),
            type = 'estimated')
   # browser()
   trt_xhat_wide <- trt_xhat %>%
