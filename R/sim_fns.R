@@ -32,7 +32,7 @@ fit_fn <- function(full_data, obs_data) {
   # browser()
   
   select <- dplyr::select
-  c(trt_xhat_wide, ctrl_xhat_wide, trt_scores, ctrl_scores) %<-%
+  c(trt_xhat_wide, ctrl_xhat_wide) %<-%
     presmooth_data(obs_data)
   # browser()
   obs_delta_s <- get_delta_s(y_t = y_t, y_c = y_c, 
