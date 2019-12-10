@@ -53,16 +53,19 @@ presmooth_data <- function(obs_data, ...) {
   trt_fpc_fit <- fpca(ds = treatment_arm, ycol = 'x', tcol = 'tt', idcol = 'id', ...)
   ctrl_fpc_fit <- fpca(ds = control_arm, ycol = 'x', tcol = 'tt', idcol = 'id', ...)
 # browser()
-  trt_xhat <- trt_fpc_fit$yh_ds %>%
-    gather(tp, X, -id) %>%
+trt_yh <- trt_fpc_fit$yh_ds %>%
+  gather(tp, X, -id)
+ctrl_yh <- ctrl_fpc_fit$yh_ds %>%
+  gather(tp, X, -id)
+  trt_xhat <- trt_yh %>%
     mutate(id = as.integer(id),
-           tt = rep(seq(-1, 1, length = 51), each = n_trt),
+           # tt = rep(seq(-1, 1, length = 51), each = n_trt),
+           tt = as.numeric(str_remove(tp, 'yhat\\.')),
            type = 'estimated')
 
-  ctrl_xhat <- ctrl_fpc_fit$yh_ds %>%
-    gather(tp, X, -id) %>%
+  ctrl_xhat <- ctrl_yh %>%
     mutate(id = as.integer(id),
-           tt = rep(seq(-1, 1, length = 51), each = n_ctrl),
+           tt = as.numeric(str_remove(tp, 'yhat\\.')),
            type = 'estimated')
   # browser()
   trt_xhat_wide <- trt_xhat %>%
