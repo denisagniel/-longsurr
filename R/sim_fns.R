@@ -85,17 +85,17 @@ lsa_sim <- function(n, n_i, m, s_y, s_x, delta, B, run, tmpdir) {
   
   if (m == 'linear') {
     c(full_data, obs_data) %<-%
-      generate_linear_data(n = n, n_i = n_i, s_y = s_y, 
+      longsurr:::generate_linear_data(n = n, n_i = n_i, s_y = s_y, 
                            s_x = s_x, delta = delta)
   } else if (m == 'nonlinear') {
     c(full_data, obs_data) %<-%
-      generate_nonlinear_data(n = n, n_i = n_i, s_y = s_y, 
+      longsurr:::generate_nonlinear_data(n = n, n_i = n_i, s_y = s_y, 
                            s_x = s_x, delta = delta)
   }
   
   
   select <- dplyr::select
-  res <- fit_fn(full_data, obs_data)
+  res <- longsurr:::fit_fn(full_data, obs_data)
   
   # browser()
   id_data <- full_data %>%
