@@ -42,7 +42,7 @@ estimate_surrogate_value <- function(y_t, y_c, X_t, X_c, method = c('gam', 'line
   }
   Deltahat <- mean(y_t) - mean(y_c)
   if (bootstrap_samples > 0) {
-    boot_ests <- purrr::map(1:bootstrap_samples, boot_fn, method, k)
+    boot_ests <- purrr::map(1:bootstrap_samples, boot_fn, method, k, y_t, y_c, X_t, X_c)
     boot_ests <- dplyr::bind_rows(boot_ests)
     boot_se <- summarise_all(boot_ests, sd, na.rm = TRUE)
     boot_ci_l <- summarise_all(boot_ests, quantile, alpha/2, na.rm = TRUE)
@@ -72,7 +72,7 @@ estimate_surrogate_value <- function(y_t, y_c, X_t, X_c, method = c('gam', 'line
   )
 }
   
-boot_fn <- function(b, method, k) {
+boot_fn <- function(b, method, k, y_t, y_c, X_t, X_c) {
     n1 <- length(y_t)
     n0 <- length(y_c)
     
