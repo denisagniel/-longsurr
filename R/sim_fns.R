@@ -102,8 +102,9 @@ lsa_sim <- function(n, n_i, m, s_y, s_x, delta, B, run, tmpdir) {
     select(id, y, a) %>%
     distinct
   if (B > 0) {
+    print('starting bootstraps')
     boot_list <- map(1:B, function(b) {
-      print(b)
+      print(glue('running bootstrap {b} of {B}...'))
       boot_data <- id_data %>%
         sample_frac(replace = TRUE) %>%
         arrange(id) %>%
@@ -116,14 +117,15 @@ lsa_sim <- function(n, n_i, m, s_y, s_x, delta, B, run, tmpdir) {
       boot_obs_data <- boot_data %>%
         merge(obs_data, by.x = c('old_id', 'a', 'y'), 
               by.y = c('id', 'a', 'y')) 
-      
+      print('estimating quantities on bootstrap data...')
       boot_fit <- fit_fn(boot_full_data, boot_obs_data)
       
       boot_fit
     })
-    
+    print('collecting bootstrap results...')
     boot_ests <- bind_rows(boot_list, .id = 'boot')
     # browser()
+    print('summarizing bootstrap results...')
     
     boot_vars <- boot_ests %>%
       group_by(estimator, type) %>%
@@ -139,6 +141,7 @@ lsa_sim <- function(n, n_i, m, s_y, s_x, delta, B, run, tmpdir) {
     full_res <- res %>%
       full_join(boot_vars)
   } else full_res <- res
+  print('cleaning everything up...')
   full_res <- 
     full_res %>%
     mutate(n = n,
@@ -147,6 +150,7 @@ lsa_sim <- function(n, n_i, m, s_y, s_x, delta, B, run, tmpdir) {
            delta = delta,
            B = B,
            run = run)
+  print('saving')
   saveRDS(full_res,
     glue('{tmpdir}/res_n{n}_ni{n_i}_m-{m}_sy{s_y}_sx{s_x}_delta{delta}_B{B}_{run}.rds')
   )
