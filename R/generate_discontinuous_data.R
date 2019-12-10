@@ -11,7 +11,7 @@
 #' @import dplyr
 #' 
 #' @export
-#' 
+
 generate_discontinuous_data <- function(
   n, n_i, k, s_y = 1, s_x = 1, delta_s, nt = 101) {
   t <- seq(-1, 1, length = nt)
