@@ -118,7 +118,7 @@ lsa_sim <- function(n, n_i, m, s_y, s_x, delta, B, run, tmpdir) {
         merge(obs_data, by.x = c('old_id', 'a', 'y'), 
               by.y = c('id', 'a', 'y')) 
       print('estimating quantities on bootstrap data...')
-      boot_fit <- fit_fn(boot_full_data, boot_obs_data)
+      boot_fit <- longsurr:::fit_fn(boot_full_data, boot_obs_data)
       
       boot_fit
     })
