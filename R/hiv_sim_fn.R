@@ -3,66 +3,20 @@ hiv_sim_fn <- function(s, mean_fn) {
     sigma_1 <- k_sigma_1
     sigma_0 <- k_sigma_0
     
-    trt_guys <- trt_guys %>%
-      mutate(y_1 = predict(kernel_fit_1),
-             y_0 = predict(kernel_fit_0, fdX_t))
-    control_guys <- control_guys %>%
-      mutate(y_0 = predict(kernel_fit_0),
-             y_1 = predict(kernel_fit_1, fdX_c))
-    
-    sim_pool <- smoothed_data %>%
-      full_join(trt_guys %>%
-                  full_join(control_guys))
-    
-    sim_id_data <- sim_pool %>%
-      dplyr::select(id, a, y_1, y_0) %>%
-      unique
-    sim_facts <- sim_id_data %>%
-      summarise(Delta = mean(y_1[a == 1]) - mean(y_0[a==0]),
-                Delta_S = mean(y_1[a==0]) - mean(y_0[a==0]),
-                R = 1 - Delta_S/Delta)
+    sim_pool <- k_sim_pool
+    sim_id_data <- k_sim_id_data
   } else if (mean_fn == 'gam') {
     sigma_1 <- g_sigma_1
     sigma_0 <- g_sigma_0
     
-    trt_guys <- trt_guys %>%
-      mutate(y_1 = predict(fgam_fit_1),
-             y_0 = predict(fgam_fit_0, newdata = list(X_0 = X_1), type = 'response'))
-    control_guys <- control_guys %>%
-      mutate(y_0 = predict(fgam_fit_0),
-             y_1 = predict(fgam_fit_1, newdata = list(X_1 = X_0), type = 'response'))
-    
-    sim_pool <- smoothed_data %>%
-      full_join(trt_guys %>%
-                  full_join(control_guys))
-    sim_id_data <- sim_pool %>%
-      dplyr::select(id, a, y_1, y_0) %>%
-      unique
-    sim_facts <- sim_id_data %>%
-      summarise(Delta = mean(y_1[a == 1]) - mean(y_0[a==0]),
-                Delta_S = mean(y_1[a==0]) - mean(y_0[a==0]),
-                R = 1 - Delta_S/Delta)
+    sim_pool <- g_sim_pool
+    sim_id_data <- g_sim_id_data
   } else if (mean_fn == 'linear') {
     sigma_1 <- l_sigma_1
     sigma_0 <- l_sigma_0
     
-    trt_guys <- trt_guys %>%
-      mutate(y_1 = predict(lin_1),
-             y_0 = predict(lin_0, newdata = list(X_0 = X_1), type = 'response'))
-    control_guys <- control_guys %>%
-      mutate(y_0 = predict(lin_0),
-             y_1 = predict(lin_1, newdata = list(X_1 = X_0), type = 'response'))
-    
-    sim_pool <- smoothed_data %>%
-      full_join(trt_guys %>%
-                  full_join(control_guys))
-    sim_id_data <- sim_pool %>%
-      dplyr::select(id, a, y_1, y_0) %>%
-      unique
-    sim_facts <- sim_id_data %>%
-      summarise(Delta = mean(y_1[a == 1]) - mean(y_0[a==0]),
-                Delta_S = mean(y_1[a==0]) - mean(y_0[a==0]),
-                R = 1 - Delta_S/Delta)
+    sim_pool <- l_sim_pool
+    sim_id_data <- l_sim_id_data
   }
   
   sim_x_data <- sim_pool %>%
