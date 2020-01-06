@@ -4,7 +4,7 @@
 \alias{estimate_kernel}
 \title{Estimate residual treatment effect after taking into account longitudinal surrogate marker with kernel smoothing}
 \usage{
-estimate_kernel(y_t, y_c, X_t, X_c, k = 3)
+estimate_kernel(y_t, y_c, X_t, X_c, k = 3, ...)
 }
 \arguments{
 \item{y_t}{vector of n1 outcome measurements for treatment group}

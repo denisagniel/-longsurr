@@ -4,7 +4,7 @@
 \alias{estimate_gam}
 \title{Estimate residual treatment effect after taking into account longitudinal surrogate marker with a GAM'}
 \usage{
-estimate_gam(y_t, y_c, X_t, X_c)
+estimate_gam(y_t, y_c, X_t, X_c, verbose = FALSE, ...)
 }
 \arguments{
 \item{y_t}{vector of n1 outcome measurements for treatment group}

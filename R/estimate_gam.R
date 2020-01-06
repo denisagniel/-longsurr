@@ -28,7 +28,7 @@
 #' 
 #' @export
 
-estimate_gam <- function(y_t, y_c, X_t, X_c) {
+estimate_gam <- function(y_t, y_c, X_t, X_c, verbose = FALSE, ...) {
   stopifnot(length(y_t) == nrow(X_t))
   stopifnot(length(y_c) == nrow(X_c))
   stopifnot(ncol(X_t) == ncol(X_c))
@@ -38,6 +38,10 @@ estimate_gam <- function(y_t, y_c, X_t, X_c) {
   k_fgam_fit <- Rsurrogate::R.s.estimate(sone = predict(fgam_fit, type ='response'),
                              szero = fgam_yhat,
                              yone = y_t,
-                             yzero = y_c, var = FALSE)
+                             yzero = y_c, var = FALSE, ...)
+  if (verbose) {
+    unsm_delta_s <- mean(fgam_yhat) - mean(y_c)
+    print(glue::glue("Unsmoothed GAM result is {unsm_delta_s}; smoothed GAM results is {k_fgam_fit$delta.s}."))
+  }
   k_fgam_fit$delta.s
 }

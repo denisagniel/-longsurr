@@ -50,6 +50,15 @@ presmooth_data <- function(obs_data, ...) {
     count(id) %>%
     nrow
   
+  times_1 <- treatment_arm %>%
+    select(tt) %>%
+    unique %>%
+    mutate(t_n = rank(tt))
+  times_0 <- control_arm %>%
+    select(tt) %>%
+    unique %>%
+    mutate(t_n = rank(tt))
+  
   trt_fpc_fit <- fpca(ds = treatment_arm, ycol = 'x', tcol = 'tt', idcol = 'id', ...)
   ctrl_fpc_fit <- fpca(ds = control_arm, ycol = 'x', tcol = 'tt', idcol = 'id', ...)
 # browser()
@@ -60,16 +69,18 @@ ctrl_yh <- ctrl_fpc_fit$yh_ds %>%
   trt_xhat <- trt_yh %>%
     mutate(id = as.integer(id),
            # tt = rep(seq(-1, 1, length = 51), each = n_trt),
-           tt = as.numeric(stringr::str_remove(tp, 'yhat\\.')),
-           type = 'estimated')
+           t_n = as.numeric(stringr::str_remove(tp, 'yhat\\.')),
+           type = 'estimated') %>%
+    inner_join(times_1)
 
   ctrl_xhat <- ctrl_yh %>%
     mutate(id = as.integer(id),
-           tt = as.numeric(stringr::str_remove(tp, 'yhat\\.')),
-           type = 'estimated')
+           t_n = as.numeric(stringr::str_remove(tp, 'yhat\\.')),
+           type = 'estimated') %>%
+    inner_join(times_0)
   # browser()
   trt_xhat_wide <- trt_xhat %>%
-    dplyr::select(-tp, -type) %>%
+    dplyr::select(-tp, -type, -t_n) %>%
     spread(tt, X) %>%
     dplyr::select(-id) %>%
     as.matrix
@@ -77,7 +88,7 @@ ctrl_yh <- ctrl_fpc_fit$yh_ds %>%
   rownames(trt_xhat_wide) <- trt_xhat$id %>% unique
 
   ctrl_xhat_wide <- ctrl_xhat %>%
-    dplyr::select(-tp, -type) %>%
+    dplyr::select(-tp, -type, -t_n) %>%
     spread(tt, X) %>%
     dplyr::select(-id) %>%
     as.matrix

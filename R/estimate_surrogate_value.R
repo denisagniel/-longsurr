@@ -32,13 +32,13 @@
 #' estimate_surrogate_value(y_t = y_t, y_c = y_c, X_t = X_t, X_c = X_c, method = 'linear', bootstrap_sample = 50)
 #' @export
 
-estimate_surrogate_value <- function(y_t, y_c, X_t, X_c, method = c('gam', 'linear', 'kernel'), k = 3, bootstrap_samples = 0, alpha = 0.05) {
+estimate_surrogate_value <- function(y_t, y_c, X_t, X_c, method = c('gam', 'linear', 'kernel'), k = 3, bootstrap_samples = 0, alpha = 0.05, ...) {
   if (method == 'linear') {
-    Deltahat_S <- estimate_linear(y_t, y_c, X_t, X_c)
+    Deltahat_S <- estimate_linear(y_t, y_c, X_t, X_c, ...)
   } else if (method == 'gam') {
-    Deltahat_S <- estimate_gam(y_t, y_c, X_t, X_c)
+    Deltahat_S <- estimate_gam(y_t, y_c, X_t, X_c, ...)
   } else if (method == 'kernel') {
-    Deltahat_S <- estimate_kernel(y_t, y_c, X_t, X_c, k)
+    Deltahat_S <- estimate_kernel(y_t, y_c, X_t, X_c, k, ...)
   }
   Deltahat <- mean(y_t) - mean(y_c)
   if (bootstrap_samples > 0) {

@@ -30,7 +30,7 @@
 #' @import refund
 #' @export
 
-estimate_linear <- function(y_t, y_c, X_t, X_c) {
+estimate_linear <- function(y_t, y_c, X_t, X_c, verbose = FALSE, ...) {
   stopifnot(length(y_t) == nrow(X_t))
   stopifnot(length(y_c) == nrow(X_c))
   stopifnot(ncol(X_t) == ncol(X_c))
@@ -41,6 +41,10 @@ estimate_linear <- function(y_t, y_c, X_t, X_c) {
   k_lin_fit <- Rsurrogate::R.s.estimate(sone = predict(lin_fit, type = 'response'),
                             szero = lin_yhat,
                             yone = y_t,
-                            yzero = y_c, var = FALSE)
+                            yzero = y_c, var = FALSE, ...)
+  if (verbose) {
+    unsm_delta_s <- mean(lin_yhat) - mean(y_c)
+    print(glue::glue("Unsmoothed linear result is {unsm_delta_s}; smoothed linear results is {k_lin_fit$delta.s}."))
+  }
   k_lin_fit$delta.s
 }

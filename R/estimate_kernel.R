@@ -32,7 +32,7 @@
 #' @import fda.usc
 #' @export
 
-estimate_kernel <- function(y_t, y_c, X_t, X_c, k = 3) {
+estimate_kernel <- function(y_t, y_c, X_t, X_c, k = 3, ...) {
   stopifnot(length(y_t) == nrow(X_t))
   stopifnot(length(y_c) == nrow(X_c))
   stopifnot(ncol(X_t) == ncol(X_c))
@@ -41,7 +41,7 @@ estimate_kernel <- function(y_t, y_c, X_t, X_c, k = 3) {
   fdX_c <- fdata(X_c)
   
   kernel_fit <- fregre.np.cv(fdataobj = fdX_t, y = y_t, 
-                           metric = make_semimetric_pca(k)) 
+                           metric = make_semimetric_pca(k), ...) 
   kernel_yhat = predict(kernel_fit, fdX_c)
   kernel_deltahat_s <- mean(kernel_yhat) - mean(y_c)
   kernel_deltahat_s

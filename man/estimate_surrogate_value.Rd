@@ -5,7 +5,7 @@
 \title{Estimate the surrogate value of a longitudinal marker}
 \usage{
 estimate_surrogate_value(y_t, y_c, X_t, X_c, method = c("gam", "linear",
-  "kernel"), k = 3, bootstrap_samples = 0, alpha = 0.05)
+  "kernel"), k = 3, bootstrap_samples = 0, alpha = 0.05, ...)
 }
 \arguments{
 \item{y_t}{vector of n1 outcome measurements for treatment group}
