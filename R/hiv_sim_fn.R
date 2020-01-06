@@ -27,10 +27,10 @@ hiv_sim_fn <- function(s, mean_fn) {
     
     trt_guys <- trt_guys %>%
       mutate(y_1 = predict(fgam_fit_1),
-             y_0 = predict(fgam_fit_0, newdata = list(X_0 = X_1)))
+             y_0 = predict(fgam_fit_0, newdata = list(X_0 = X_1), type = 'response'))
     control_guys <- control_guys %>%
       mutate(y_0 = predict(fgam_fit_0),
-             y_1 = predict(fgam_fit_1, newdata = list(X_1 = X_0)))
+             y_1 = predict(fgam_fit_1, newdata = list(X_1 = X_0), type = 'response'))
     
     sim_pool <- smoothed_data %>%
       full_join(trt_guys %>%
@@ -48,10 +48,10 @@ hiv_sim_fn <- function(s, mean_fn) {
     
     trt_guys <- trt_guys %>%
       mutate(y_1 = predict(lin_1),
-             y_0 = predict(lin_0, newdata = list(X_0 = X_1)))
+             y_0 = predict(lin_0, newdata = list(X_0 = X_1), type = 'response'))
     control_guys <- control_guys %>%
       mutate(y_0 = predict(lin_0),
-             y_1 = predict(lin_1, newdata = list(X_1 = X_0)))
+             y_1 = predict(lin_1, newdata = list(X_1 = X_0), type = 'response'))
     
     sim_pool <- smoothed_data %>%
       full_join(trt_guys %>%
