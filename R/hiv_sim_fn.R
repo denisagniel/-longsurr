@@ -21,7 +21,7 @@ hiv_sim_fn <- function(s, mean_fn) {
       summarise(Delta = mean(y_1[a == 1]) - mean(y_0[a==0]),
                 Delta_S = mean(y_1[a==0]) - mean(y_0[a==0]),
                 R = 1 - Delta_S/Delta)
-  } else if (method == 'gam') {
+  } else if (mean_fn == 'gam') {
     sigma_1 <- g_sigma_1
     sigma_0 <- g_sigma_0
     
@@ -42,7 +42,7 @@ hiv_sim_fn <- function(s, mean_fn) {
       summarise(Delta = mean(y_1[a == 1]) - mean(y_0[a==0]),
                 Delta_S = mean(y_1[a==0]) - mean(y_0[a==0]),
                 R = 1 - Delta_S/Delta)
-  } else if (method == 'linear') {
+  } else if (mean_fn == 'linear') {
     sigma_1 <- l_sigma_1
     sigma_0 <- l_sigma_0
     
