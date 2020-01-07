@@ -3,21 +3,24 @@ hiv_sim_fn <- function(s, mean_fn) {
     sigma_1 <- k_sigma_1
     sigma_0 <- k_sigma_0
     
-    sim_pool <- k_sim_pool
+    sim_pool <- smoothed_data %>%
+      full_join(k_sim_id_data)
     sim_id_data <- k_sim_id_data
     sim_facts <- k_sim_facts
   } else if (mean_fn == 'gam') {
     sigma_1 <- g_sigma_1
     sigma_0 <- g_sigma_0
     
-    sim_pool <- g_sim_pool
+    sim_pool <- smoothed_data %>%
+      full_join(g_sim_id_data)
     sim_id_data <- g_sim_id_data
     sim_facts <- g_sim_facts
   } else if (mean_fn == 'linear') {
     sigma_1 <- l_sigma_1
     sigma_0 <- l_sigma_0
     
-    sim_pool <- l_sim_pool
+    sim_pool <- smoothed_data %>%
+      full_join(l_sim_id_data)
     sim_id_data <- l_sim_id_data
     sim_facts <- l_sim_facts
   }
