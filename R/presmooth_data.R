@@ -50,17 +50,17 @@ presmooth_data <- function(obs_data, ...) {
     count(id) %>%
     nrow
   
-  times_1 <- treatment_arm %>%
-    select(tt) %>%
-    unique %>%
-    mutate(t_n = rank(tt))
-  times_0 <- control_arm %>%
-    select(tt) %>%
-    unique %>%
-    mutate(t_n = rank(tt))
   
   trt_fpc_fit <- fpca(ds = treatment_arm, ycol = 'x', tcol = 'tt', idcol = 'id', ...)
   ctrl_fpc_fit <- fpca(ds = control_arm, ycol = 'x', tcol = 'tt', idcol = 'id', ...)
+  
+  
+  times_1 <- tibble(tt = trt_fpc_fit$fpca_result$workGrid,
+                    t_n = rank(tt))
+    
+  times_0 <- tibble(tt = ctrl_fpc_fit$fpca_result$workGrid,
+                    t_n = rank(tt))
+  
 # browser()
 trt_yh <- trt_fpc_fit$yh_ds %>%
   gather(tp, X, -id)
