@@ -82,7 +82,7 @@ hiv_sim_fn <- function(s, mean_fn) {
                  dplyr::select(id, y) %>%
                  unique)
   
-  new_grid <- c(3,  7, 11, 15, 19, 23, 27, 31, 35, 39, 43)
+  new_grid <- 2:43
   rrX_1 <- rr_x1[,new_grid]
   rrX_0 <- rr_x0[,new_grid]
   
@@ -102,11 +102,11 @@ hiv_sim_fn <- function(s, mean_fn) {
   rry_c <- rrcontrol_guys %>%
     pull(y)
   
-  out_res <- list(kernel = estimate_surrogate_value(y_t = rry_t, y_c = rry_c, X_t = rrX_1, X_c = rrX_0, method = 'kernel'),
-                  gam = estimate_surrogate_value(y_t = rry_t, y_c = rry_c, X_t = rrX_1, X_c = rrX_0, method = 'gam', verbose = TRUE),
-                  linear = estimate_surrogate_value(y_t = rry_t, y_c = rry_c, X_t = rrX_1, X_c = rrX_0, method = 'linear', verbose = TRUE)
+  out_res <- list(kernel = estimate_surrogate_value(y_t = rry_t, y_c = rry_c, X_t = rrX_1, X_c = rrX_0, method = 'kernel', bootstrap_samples = 250),
+                  gam = estimate_surrogate_value(y_t = rry_t, y_c = rry_c, X_t = rrX_1, X_c = rrX_0, method = 'gam', verbose = FALSE, bootstrap_samples = 250),
+                  linear = estimate_surrogate_value(y_t = rry_t, y_c = rry_c, X_t = rrX_1, X_c = rrX_0, method = 'linear', verbose = FALSE, bootstrap_samples = 250)
   ) %>% bind_rows(.id = 'method')
-  if (any(is.na(out_res$Deltahat_S))) browser()
+  
   out_res %>%
     mutate(Delta_0 = sim_facts$Delta,
            Delta_S0 = sim_facts$Delta_S,
