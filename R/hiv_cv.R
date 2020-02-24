@@ -1,4 +1,4 @@
-hiv_cv <- function(time_list, all_ids, analysis_data, smoothed_data, trt_xhat_wide) {
+hiv_cv <- function(s, time_list, all_ids, analysis_data, smoothed_data, trt_xhat_wide) {
   training_data <- all_ids %>% sample_frac(0.8) %>%
     inner_join(analysis_data)
   test_data <- analysis_data %>%
