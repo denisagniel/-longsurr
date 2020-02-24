@@ -1,4 +1,5 @@
 hiv_cv <- function(s, time_list, all_ids, analysis_data, smoothed_data, trt_xhat_wide) {
+  print('split data...')
   training_data <- all_ids %>% sample_frac(0.8) %>%
     inner_join(analysis_data)
   test_data <- analysis_data %>%
@@ -8,6 +9,7 @@ hiv_cv <- function(s, time_list, all_ids, analysis_data, smoothed_data, trt_xhat
   test_smth <- smoothed_data %>%
     filter(id %in% test_data$id)
   
+  print('start fitting models...')
   tts_out <- map(time_list, function(tts) {
     X_1 <- trt_xhat_wide[rownames(trt_xhat_wide) %in% training_data$id,tts]
     fdX_t <- fdata(X_1)
@@ -20,7 +22,7 @@ hiv_cv <- function(s, time_list, all_ids, analysis_data, smoothed_data, trt_xhat
     y_t <- trt_guys %>%
       pull(y)
     
-    
+    print('fit kernel models...')
     k3_fit_1 <- fregre.np.cv(fdataobj = fdX_t, y = y_t,
                              metric = longsurr:::make_semimetric_pca(3))
     k4_fit_1 <- fregre.np.cv(fdataobj = fdX_t, y = y_t,
@@ -28,6 +30,7 @@ hiv_cv <- function(s, time_list, all_ids, analysis_data, smoothed_data, trt_xhat
     k5_fit_1 <- fregre.np.cv(fdataobj = fdX_t, y = y_t,
                              metric = longsurr:::make_semimetric_pca(5))
     
+    print('fit parametric models...')
     lin_1 <- pfr(y_t ~ lf(X_1))
     fgam_fit_1 <- fgam(y_t ~ af(X_1))
     
@@ -42,6 +45,7 @@ hiv_cv <- function(s, time_list, all_ids, analysis_data, smoothed_data, trt_xhat
     test_y_t <- test_trt_guys %>%
       pull(y)
     
+    print('get out of sample performance...')
     yhat_k3_1 <- predict(k3_fit_1, new.fdataobj = test_fdX_t)
     yhat_k4_1 <- predict(k4_fit_1, new.fdataobj = test_fdX_t)
     yhat_k5_1 <- predict(k5_fit_1, new.fdataobj = test_fdX_t)
@@ -61,6 +65,7 @@ hiv_cv <- function(s, time_list, all_ids, analysis_data, smoothed_data, trt_xhat
     l_mse1 <- mean((test_y_t - yhat_l_1)^2)
     l_r1 <- cor(test_y_t, yhat_l_1)
     
+    print('return everything.')
     out_l <- tibble(k3_mse = k3_mse1,
                     k4_mse = k4_mse1,
                     k5_mse = k5_mse1,
