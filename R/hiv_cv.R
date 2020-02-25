@@ -86,6 +86,6 @@ hiv_cv <- function(s, i, time_list, all_ids, analysis_data, smoothed_data, trt_x
                     l_r = l_r1,
                     tt = list(tts),
                     sd = s)
-    readr::write_rds(out_l, glue::glue('{tmpdir}/cv-res_t{i}_s.rds'))
+    readr::write_rds(out_l, glue::glue('{tmpdir}/cv-res_t{i}_s{s}.rds'))
   out_l
 }
