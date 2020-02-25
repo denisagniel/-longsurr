@@ -1,5 +1,11 @@
-hiv_cv <- function(s, time_list, all_ids, analysis_data, smoothed_data, trt_xhat_wide) {
-  print('split data...')
+hiv_cv <- function(s, i, time_list, all_ids, analysis_data, smoothed_data, trt_xhat_wide, tmpdir = NULL) {
+  
+  if (is.null(tmpdir)) {
+    tmpdir <- here('results/tmp')
+    fs::dir_create(here('results/tmp'))
+  }
+  # print('split data...')
+  set.seed(s)
   training_data <- all_ids %>% sample_frac(0.8) %>%
     inner_join(analysis_data)
   test_data <- analysis_data %>%
@@ -9,8 +15,10 @@ hiv_cv <- function(s, time_list, all_ids, analysis_data, smoothed_data, trt_xhat
   test_smth <- smoothed_data %>%
     filter(id %in% test_data$id)
   
-  print('start fitting models...')
-  tts_out <- map(time_list, function(tts) {
+  # print('start fitting models...')
+  set.seed(s*i)
+  # tts_out <- map(time_list, function(tts) {
+  tts <- time_list[[i]]
     X_1 <- trt_xhat_wide[rownames(trt_xhat_wide) %in% training_data$id,tts]
     fdX_t <- fdata(X_1)
     
@@ -76,9 +84,8 @@ hiv_cv <- function(s, time_list, all_ids, analysis_data, smoothed_data, trt_xhat
                     k5_r = k5_r1,
                     g_r = g_r1,
                     l_r = l_r1,
-                    tt = list(tts))
-    out_l
-  })
-  
-  tts_out %>% bind_rows(.id = 'tt_n')
+                    tt = list(tts),
+                    sd = s)
+    readr::write_rds(out_l, glue::glue('{tmpdir}/cv-res_t{i}_s.rds'))
+  out_l
 }
