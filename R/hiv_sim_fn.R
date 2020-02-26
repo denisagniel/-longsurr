@@ -82,12 +82,14 @@ hiv_sim_fn <- function(s, mean_fn) {
                  dplyr::select(id, y) %>%
                  unique)
   
-  new_grid <- 2:43
-  rrX_1 <- rr_x1[,new_grid]
-  rrX_0 <- rr_x0[,new_grid]
   
-  rrfdX_t <- fdata(rrX_1)
-  rrfdX_c <- fdata(rrX_0)
+  rrg_xt <- rr_x1[,g_grid]
+  rrg_xc <- rr_x0[,g_grid]
+  rrl_xt <- rr_x1[,l_grid]
+  rrl_xc <- rr_x0[,l_grid]
+  rrk_xt <- rr_x1[,k_grid]
+  rrk_xc <- rr_x0[,k_grid]
+
   
   rrtrt_guys <- rerand_ds %>%
     filter(a == 1) %>%
@@ -102,9 +104,24 @@ hiv_sim_fn <- function(s, mean_fn) {
   rry_c <- rrcontrol_guys %>%
     pull(y)
   
-  out_res <- list(kernel = estimate_surrogate_value(y_t = rry_t, y_c = rry_c, X_t = rrX_1, X_c = rrX_0, method = 'kernel', bootstrap_samples = 250),
-                  gam = estimate_surrogate_value(y_t = rry_t, y_c = rry_c, X_t = rrX_1, X_c = rrX_0, method = 'gam', verbose = FALSE, bootstrap_samples = 250),
-                  linear = estimate_surrogate_value(y_t = rry_t, y_c = rry_c, X_t = rrX_1, X_c = rrX_0, method = 'linear', verbose = FALSE, bootstrap_samples = 250)
+  out_res <- list(
+    kernel = estimate_surrogate_value(y_t = rry_t, 
+                                      y_c = rry_c, 
+                                      X_t = rrk_xt, 
+                                      X_c = rrk_xc, 
+                                      method = 'kernel', bootstrap_samples = 250),
+    gam = estimate_surrogate_value(y_t = rry_t, 
+                                   y_c = rry_c, 
+                                   X_t = rrg_xt, 
+                                   X_c = rrg_xc, 
+                                   method = 'gam', 
+                                   verbose = FALSE, bootstrap_samples = 250),
+    linear = estimate_surrogate_value(y_t = rry_t, 
+                                      y_c = rry_c, 
+                                      X_t = rrl_xt, 
+                                      X_c = rrl_xc, 
+                                      method = 'linear', 
+                                      verbose = FALSE, bootstrap_samples = 250)
   ) %>% bind_rows(.id = 'method')
   
   out_res %>%
